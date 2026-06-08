@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cuestionario EC0190</title>
+    <!-- React, ReactDOM y Babel para ejecutar JSX en el navegador -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <!-- Tailwind CSS para los estilos -->
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-100">
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+
+        // Preguntas extraídas del PDF (EC0190) y reformuladas con 4 opciones.
+        const questions = [
+          { id: 1, question: "Antes de encender el equipo de cómputo, ¿qué acción preventiva debes tomar respecto a tu área de trabajo para evitar accidentes?", options: [
+            { text: "Encender primero el monitor y luego el CPU.", isCorrect: false },
+            { text: "Asegurarte de que el espacio esté libre de obstáculos que entorpezcan el movimiento.", isCorrect: true },
+            { text: "Desconectar el equipo de la red eléctrica por 5 minutos.", isCorrect: false },
+            { text: "Instalar un software antivirus actualizado.", isCorrect: false }
+          ]},
+          { id: 2, question: "¿Por qué es una regla básica de seguridad revisar que el área del equipo de cómputo esté libre de líquidos y alimentos?", options: [
+            { text: "Para evitar distraerse durante el horario laboral.", isCorrect: false },
+            { text: "Porque el calor del equipo puede descomponer los alimentos rápidamente.", isCorrect: false },
+            { text: "Para que el teclado no pierda su color original.", isCorrect: false },
+            { text: "Para prevenir derrames que causen cortocircuitos o dañen los componentes.", isCorrect: true }
+          ]},
+          { id: 3, question: "¿Qué medida de limpieza básica ayuda a prevenir el sobrecalentamiento y las fallas mecánicas en el equipo?", options: [
+            { text: "Mantener el área y los componentes externos libres de polvo.", isCorrect: true },
+            { text: "Lavar el teclado con agua y jabón neutro cada semana.", isCorrect: false },
+            { text: "Rociar líquido limpiador de vidrios directamente sobre el monitor.", isCorrect: false },
+            { text: "Desarmar el disco duro para sacudirlo internamente.", isCorrect: false }
+          ]},
+          { id: 4, question: "Si un dispositivo periférico no es detectado, ¿cuál es la revisión física inicial que debes realizar?", options: [
+            { text: "Reinstalar completamente el Sistema Operativo.", isCorrect: false },
+            { text: "Comprar un cable nuevo inmediatamente.", isCorrect: false },
+            { text: "Verificar que los cables y conexiones estén debidamente acoplados a sus puertos.", isCorrect: true },
+            { text: "Cambiar la configuración de red del equipo.", isCorrect: false }
+          ]},
+          { id: 5, question: "¿Qué debes comprobar externamente para garantizar que la computadora encenderá sin problemas?", options: [
+            { text: "Que todos los componentes tengan suministro de corriente eléctrica.", isCorrect: true },
+            { text: "Que el disco duro esté vacío al menos en un 50%.", isCorrect: false },
+            { text: "Que la impresora tenga hojas nuevas.", isCorrect: false },
+            { text: "Que el usuario administrador no tenga contraseña.", isCorrect: false }
+          ]},
+          { id: 6, question: "Al encender el equipo, ¿cómo confirmas visual y auditivamente que opera de forma normal en su fase inicial?", options: [
+            { text: "Verificando que los ventiladores giren, luces enciendan y haya imagen en el monitor.", isCorrect: true },
+            { text: "Observando si sale una hoja de prueba de la impresora.", isCorrect: false },
+            { text: "Escuchando tres pitidos largos constantes del gabinete.", isCorrect: false },
+            { text: "Revisando que el teclado se bloquee automáticamente.", isCorrect: false }
+          ]},
+          { id: 7, question: "¿Qué utilidad del sistema reorganiza los archivos fragmentados en el disco duro para optimizar el tiempo de respuesta?", options: [
+            { text: "El Liberador de espacio en disco.", isCorrect: false },
+            { text: "El Desfragmentador de unidades de disco.", isCorrect: true },
+            { text: "El Administrador de dispositivos.", isCorrect: false },
+            { text: "El Panel de control de redes.", isCorrect: false }
+          ]},
+          { id: 8, question: "Para liberar espacio en disco de manera segura sin dañar el Sistema Operativo, ¿qué archivos puedes eliminar?", options: [
+            { text: "Archivos con extensión .sys y .dll del directorio principal.", isCorrect: false },
+            { text: "Todo el contenido de la carpeta 'Windows'.", isCorrect: false },
+            { text: "Archivos del registro del sistema (Regedit).", isCorrect: false },
+            { text: "Archivos temporales, historial de navegación y elementos de la Papelera de reciclaje.", isCorrect: true }
+          ]},
+          { id: 9, question: "Si un programa informático se bloquea y no responde, ¿qué herramienta te permite finalizar ese proceso forzosamente?", options: [
+            { text: "La línea de comandos (CMD).", isCorrect: false },
+            { text: "El Administrador de Tareas de Windows.", isCorrect: true },
+            { text: "El desinstalador de programas del Panel de Control.", isCorrect: false },
+            { text: "El comprobador de errores del disco duro.", isCorrect: false }
+          ]},
+          { id: 10, question: "¿Qué acción permite ordenar los iconos del escritorio para ver rápidamente cuál fue el último archivo modificado?", options: [
+            { text: "Organizar los elementos del escritorio por 'Fecha de modificación'.", isCorrect: true },
+            { text: "Organizar los elementos del escritorio por 'Tamaño'.", isCorrect: false },
+            { text: "Ocultar todos los iconos del escritorio temporalmente.", isCorrect: false },
+            { text: "Alinear los iconos a la cuadrícula.", isCorrect: false }
+          ]},
+          { id: 11, question: "¿Cómo se le llama a la imagen gráfica que se establece como decoración detrás de los iconos en el escritorio de Windows?", options: [
+            { text: "Protector de pantalla.", isCorrect: false },
+            { text: "Fondo de pantalla o tapiz.", isCorrect: true },
+            { text: "Tema de iconos.", isCorrect: false },
+            { text: "Resolución gráfica.", isCorrect: false }
+          ]},
+          { id: 12, question: "¿Qué configuración se utiliza para mostrar una imagen o animación tras un periodo de inactividad del usuario?", options: [
+            { text: "La barra de tareas.", isCorrect: false },
+            { text: "El panel de notificaciones.", isCorrect: false },
+            { text: "El protector de pantalla (Screensaver).", isCorrect: true },
+            { text: "El menú de inicio.", isCorrect: false }
+          ]},
+          { id: 13, question: "Si necesitas agrupar tus trabajos, ¿cómo creas un nuevo directorio en el Explorador de Windows?", options: [
+            { text: "Dando clic derecho, seleccionando 'Nuevo', luego 'Carpeta' y escribiendo un nombre.", isCorrect: true },
+            { text: "Dando clic derecho sobre un archivo existente y seleccionando 'Agrupar'.", isCorrect: false },
+            { text: "Arrastrando un archivo sobre otro hasta que se fusionen.", isCorrect: false },
+            { text: "Presionando la tecla F5 repetidamente.", isCorrect: false }
+          ]},
+          { id: 14, question: "Una vez localizada una carpeta en el escritorio, ¿qué acción del ratón la abre para ver su contenido?", options: [
+            { text: "Hacer un clic derecho sobre ella.", isCorrect: false },
+            { text: "Hacer un clic izquierdo sostenido.", isCorrect: false },
+            { text: "Desplazar la rueda del ratón (scroll) sobre ella.", isCorrect: false },
+            { text: "Hacer doble clic izquierdo sobre su icono.", isCorrect: true }
+          ]},
+          { id: 15, question: "¿Qué procedimiento te permite mantener un archivo original intacto y colocar una réplica exacta en otra ubicación?", options: [
+            { text: "Seleccionar el archivo, 'Cortar' y luego 'Pegar'.", isCorrect: false },
+            { text: "Seleccionar el archivo, 'Copiar' y luego 'Pegar'.", isCorrect: true },
+            { text: "Arrastrar el archivo a la Papelera de reciclaje.", isCorrect: false },
+            { text: "Cambiar el nombre del archivo original.", isCorrect: false }
+          ]},
+          { id: 16, question: "Si deseas cambiar un archivo de ubicación eliminándolo de su lugar original, ¿qué comando es el adecuado?", options: [
+            { text: "El comando 'Mover' o la combinación 'Cortar' y 'Pegar'.", isCorrect: true },
+            { text: "El comando 'Copiar' y 'Pegar'.", isCorrect: false },
+            { text: "La opción 'Enviar a disco extraíble'.", isCorrect: false },
+            { text: "La opción 'Crear acceso directo'.", isCorrect: false }
+          ]},
+          { id: 17, question: "¿A dónde se dirige un archivo de tu disco duro cuando presionas la opción 'Eliminar' de forma predeterminada?", options: [
+            { text: "A la nube de almacenamiento de Windows.", isCorrect: false },
+            { text: "Se borra de forma permanente e irrecuperable al instante.", isCorrect: false },
+            { text: "A la Papelera de reciclaje.", isCorrect: true },
+            { text: "A la carpeta de Archivos Temporales.", isCorrect: false }
+          ]},
+          { id: 18, question: "Para visualizar el tamaño exacto en disco y la fecha en que fue creado un documento, debes consultar:", options: [
+            { text: "Las propiedades del archivo.", isCorrect: true },
+            { text: "El administrador de tareas.", isCorrect: false },
+            { text: "El historial de Internet.", isCorrect: false },
+            { text: "La barra de título del documento.", isCorrect: false }
+          ]},
+          { id: 19, question: "Para ver información adicional de los archivos dentro de una carpeta (como tipo, tamaño y fecha) en forma de lista, ¿qué vista debes activar?", options: [
+            { text: "Vista de Iconos muy grandes.", isCorrect: false },
+            { text: "Vista de Detalles.", isCorrect: true },
+            { text: "Vista de Mosaicos.", isCorrect: false },
+            { text: "Vista de Lista simple.", isCorrect: false }
+          ]},
+          { id: 20, question: "¿Cómo se llama al enlace que creas en el escritorio apuntando a un archivo ubicado profundamente en el disco duro?", options: [
+            { text: "Un archivo comprimido (.zip).", isCorrect: false },
+            { text: "Un acceso directo.", isCorrect: true },
+            { text: "Una copia de seguridad oculta.", isCorrect: false },
+            { text: "Una extensión de sistema.", isCorrect: false }
+          ]},
+          { id: 21, question: "¿Qué sucede al hacer doble clic sobre el icono de un acceso directo en el escritorio?", options: [
+            { text: "El equipo se reinicia en modo seguro.", isCorrect: false },
+            { text: "Se abre una ventana de propiedades del sistema.", isCorrect: false },
+            { text: "El sistema accede y ejecuta el programa o archivo original asociado.", isCorrect: true },
+            { text: "Se elimina el archivo original por seguridad.", isCorrect: false }
+          ]},
+          { id: 22, question: "Si hay múltiples impresoras en red, ¿cómo indicas que todos tus trabajos se envíen automáticamente a una en particular?", options: [
+            { text: "Desconectando el resto de impresoras de la corriente eléctrica.", isCorrect: false },
+            { text: "Instalándola y configurándola como 'Impresora predeterminada'.", isCorrect: true },
+            { text: "Cambiando el nombre del documento a imprimir.", isCorrect: false },
+            { text: "Imprimiendo siempre desde modo incógnito.", isCorrect: false }
+          ]},
+          { id: 23, question: "Antes de mandar a imprimir, ¿dónde puedes establecer que el papel sea tamaño Oficio y esté en posición horizontal?", options: [
+            { text: "En la Configuración de página o Propiedades de impresión.", isCorrect: true },
+            { text: "En el Administrador de Tareas.", isCorrect: false },
+            { text: "En las propiedades de la Papelera de reciclaje.", isCorrect: false },
+            { text: "En el panel de opciones de la memoria RAM.", isCorrect: false }
+          ]},
+          { id: 24, question: "Para poder consultar información en la web, ¿cuál es el software principal al que debes acceder?", options: [
+            { text: "Un programa de hoja de cálculo (como Excel).", isCorrect: false },
+            { text: "Un explorador o navegador web (como Chrome, Firefox o Edge).", isCorrect: true },
+            { text: "El reproductor multimedia de Windows.", isCorrect: false },
+            { text: "El desfragmentador de disco.", isCorrect: false }
+          ]},
+          { id: 25, question: "¿Cómo se le llama a la acción de saltar de una página web a otra mediante enlaces o hipervínculos?", options: [
+            { text: "Programar en la nube.", isCorrect: false },
+            { text: "Compilar código fuente.", isCorrect: false },
+            { text: "Navegar en páginas web.", isCorrect: true },
+            { text: "Formatear el disco duro en red.", isCorrect: false }
+          ]},
+          { id: 26, question: "Si usas un motor de búsqueda, ¿qué técnica te proporciona resultados más acordes a lo que necesitas?", options: [
+            { text: "Escribir palabras clave específicas que limiten la búsqueda.", isCorrect: true },
+            { text: "Buscar utilizando únicamente vocales.", isCorrect: false },
+            { text: "Escribir un párrafo completo de 20 líneas en la barra.", isCorrect: false },
+            { text: "Dejar la barra de búsqueda vacía y presionar Enter.", isCorrect: false }
+          ]},
+          { id: 27, question: "¿Cómo se denomina al proceso de transferir y guardar un archivo de un sitio web hacia tu computadora local?", options: [
+            { text: "Subida (Upload).", isCorrect: false },
+            { text: "Sincronización en la nube.", isCorrect: false },
+            { text: "Descarga de archivos (Download).", isCorrect: true },
+            { text: "Copia de seguridad del sistema operativo.", isCorrect: false }
+          ]},
+          { id: 28, question: "¿Qué característica del navegador te permite tener abiertas 3 páginas distintas simultáneamente en la misma ventana?", options: [
+            { text: "Las pestañas (Tabs).", isCorrect: true },
+            { text: "Los marcadores ocultos.", isCorrect: false },
+            { text: "El modo de pantalla completa.", isCorrect: false },
+            { text: "La barra de estado.", isCorrect: false }
+          ]},
+          { id: 29, question: "¿En qué apartado del navegador puedes verificar el listado de todos los sitios que visitaste el día de ayer?", options: [
+            { text: "En la ventana de descargas.", isCorrect: false },
+            { text: "En la libreta de direcciones IP.", isCorrect: false },
+            { text: "En el Historial de navegación.", isCorrect: true },
+            { text: "En las extensiones de bloqueo de anuncios.", isCorrect: false }
+          ]},
+          { id: 30, question: "Si encuentras una página en tu Historial de navegación, ¿cómo accedes a ella rápidamente?", options: [
+            { text: "Dando clic directamente sobre el enlace listado en el Historial.", isCorrect: true },
+            { text: "Copiando letra por letra en un bloc de notas.", isCorrect: false },
+            { text: "Cerrando el navegador y volviéndolo a abrir.", isCorrect: false },
+            { text: "Eliminándola del historial primero.", isCorrect: false }
+          ]},
+          { id: 31, question: "Durante la lectura de una página, si deseas volver rápidamente a la pantalla web que acabas de dejar atrás, debes usar:", options: [
+            { text: "El botón de minimizar ventana.", isCorrect: false },
+            { text: "El botón de Atrás en la barra de navegación.", isCorrect: true },
+            { text: "La tecla de borrar (Backspace) en el teclado numérico.", isCorrect: false },
+            { text: "El botón central del ratón.", isCorrect: false }
+          ]},
+          { id: 32, question: "Para poder utilizar los servicios de e-mail y enviar mensajes a otras personas, primero debes:", options: [
+            { text: "Conocer el código postal de todos tus contactos.", isCorrect: false },
+            { text: "Generar una cuenta de correo electrónico gratuita o de paga.", isCorrect: true },
+            { text: "Comprar un módem de uso exclusivo.", isCorrect: false },
+            { text: "Instalar un servidor de correo en tu domicilio.", isCorrect: false }
+          ]},
+          { id: 33, question: "¿Qué nombre recibe el proceso de escribir el texto, establecer un asunto y agregar los destinatarios en un email?", options: [
+            { text: "Redactar un mensaje.", isCorrect: true },
+            { text: "Desfragmentar un archivo.", isCorrect: false },
+            { text: "Compilar información.", isCorrect: false },
+            { text: "Formatear destinatarios.", isCorrect: false }
+          ]},
+          { id: 34, question: "Una vez que tu mensaje de correo electrónico está listo, ¿cómo lo despachas hacia sus destinatarios?", options: [
+            { text: "Imprimiéndolo y escaneándolo.", isCorrect: false },
+            { text: "Guardándolo en la carpeta de borradores.", isCorrect: false },
+            { text: "Haciendo clic en el botón 'Enviar'.", isCorrect: true },
+            { text: "Minimizando el navegador web.", isCorrect: false }
+          ]},
+          { id: 35, question: "Dentro del sistema de correo electrónico, ¿cómo puedes separar y categorizar visualmente tus mensajes recibidos, enviados y eliminados?", options: [
+            { text: "Abriendo y organizando las distintas bandejas o carpetas del correo.", isCorrect: true },
+            { text: "Cambiando la contraseña diariamente.", isCorrect: false },
+            { text: "Descargando todos los correos al disco local y borrándolos de la web.", isCorrect: false },
+            { text: "Utilizando únicamente la barra de búsqueda.", isCorrect: false }
+          ]},
+          { id: 36, question: "Si recibes un correo importante del banco, ¿qué acción te ayuda a organizarlo mejor en tu cuenta?", options: [
+            { text: "Mover el mensaje a una carpeta específica llamada 'Banco' o 'Finanzas'.", isCorrect: true },
+            { text: "Enviarlo a la papelera de reciclaje inmediatamente.", isCorrect: false },
+            { text: "Reenviarlo a todos tus contactos.", isCorrect: false },
+            { text: "Marcarlo como correo no deseado (Spam).", isCorrect: false }
+          ]},
+          { id: 37, question: "Para acceder a un sistema de chat privado o red social, ¿qué método de validación estándar se solicita?", options: [
+            { text: "Aprobar un examen capcha de 50 imágenes.", isCorrect: false },
+            { text: "Ingresar tu dirección física y número de teléfono fijo.", isCorrect: false },
+            { text: "Autenticarte mediante un nombre de usuario (username) y contraseña (password).", isCorrect: true },
+            { text: "Aceptar un correo electrónico en blanco.", isCorrect: false }
+          ]},
+          { id: 38, question: "Durante una sesión de chat colaborativo, ¿cómo interactúas con los demás miembros sobre un tema?", options: [
+            { text: "Ignorando la ventana de texto y utilizando llamadas tradicionales.", isCorrect: false },
+            { text: "Realizando una aportación o comentario escrito en el cuadro de diálogo.", isCorrect: true },
+            { text: "Bloqueando a todos los usuarios de la sala.", isCorrect: false },
+            { text: "Cerrando el navegador repentinamente.", isCorrect: false }
+          ]},
+          { id: 39, question: "Al concluir tu participación en una sesión de chat o plataforma en línea, la práctica más segura es:", options: [
+            { text: "Desconectar la computadora directamente de la pared.", isCorrect: false },
+            { text: "Apagar el monitor dejando la sesión abierta.", isCorrect: false },
+            { text: "Realizar el cierre de sesión ('Log out' o 'Cerrar chat').", isCorrect: true },
+            { text: "Eliminar el acceso directo del escritorio.", isCorrect: false }
+          ]},
+          { id: 40, question: "¿Cómo se define de manera más precisa a un programa informático o 'software'?", options: [
+            { text: "Un sistema físico diseñado para monitorear redes.", isCorrect: false },
+            { text: "Un conjunto de instrucciones lógicas que indican a los componentes físicos cómo ejecutar una tarea.", isCorrect: true },
+            { text: "Una secuencia de mensajes electrónicos enviados mundialmente.", isCorrect: false },
+            { text: "El conjunto de dispositivos palpables de un equipo.", isCorrect: false }
+          ]},
+          { id: 41, question: "¿Cuál de las siguientes afirmaciones describe mejor el propósito de un 'Sistema Operativo' (ej. Windows)?", options: [
+            { text: "Es una plataforma exclusiva para navegar por sitios de Internet.", isCorrect: false },
+            { text: "Es una aplicación específica para editar texto e imágenes.", isCorrect: false },
+            { text: "Es un componente físico (hardware) que mejora la velocidad del equipo.", isCorrect: false },
+            { text: "Es el programa base encargado de administrar el hardware y el software del equipo.", isCorrect: true }
+          ]},
+          { id: 42, question: "¿Para qué sirve primordialmente un directorio o 'carpeta' en un entorno Windows?", options: [
+            { text: "Para realizar mantenimiento y desfragmentación automática.", isCorrect: false },
+            { text: "Para organizar la estructura de archivos, permitiendo guardar documentos y otras subcarpetas.", isCorrect: true },
+            { text: "Para servir como papelera exclusiva de programas borrados.", isCorrect: false },
+            { text: "Para generar copias de seguridad en servidores de Internet.", isCorrect: false }
+          ]},
+          { id: 43, question: "¿Qué es en esencia un 'acceso directo'?", options: [
+            { text: "Un área exclusiva de la memoria RAM.", isCorrect: false },
+            { text: "Un programa de protección antivirus oculto.", isCorrect: false },
+            { text: "Una vía o enlace rápido para iniciar programas o abrir archivos sin buscar su ubicación real en disco.", isCorrect: true },
+            { text: "Una herramienta para saltarse las contraseñas de Windows.", isCorrect: false }
+          ]},
+          { id: 44, question: "Entre las propiedades del sistema operativo, ¿cuál de los siguientes atributos pertenece exclusivamente a un archivo (y NO a una carpeta)?", options: [
+            { text: "La propiedad 'Abrir con' que especifica la aplicación que lo ejecutará.", isCorrect: true },
+            { text: "La Fecha de Creación.", isCorrect: false },
+            { text: "El tamaño visual del icono.", isCorrect: false },
+            { text: "La ubicación en la unidad de almacenamiento.", isCorrect: false }
+          ]},
+          { id: 45, question: "En un entorno Windows, ¿qué indica la extensión '.docx' o '.jpg' al final del nombre de un elemento?", options: [
+            { text: "La ubicación donde fue descargado de Internet.", isCorrect: false },
+            { text: "El tipo de archivo y el programa con el que suele representarse y abrirse.", isCorrect: true },
+            { text: "La fecha exacta en la que se modificó el documento.", isCorrect: false },
+            { text: "El peso en Megabytes de ese archivo en específico.", isCorrect: false }
+          ]},
+          { id: 46, question: "¿Cuál es la característica principal que distingue a la memoria RAM (Random Access Memory)?", options: [
+            { text: "Es un disco magnético de almacenamiento permanente e inamovible.", isCorrect: false },
+            { text: "Es una memoria volátil de acceso rápido y aleatorio que el procesador usa para tareas actuales.", isCorrect: true },
+            { text: "Es una memoria que únicamente permite su lectura (ROM).", isCorrect: false },
+            { text: "Es el entorno gráfico que controla el ratón y el teclado.", isCorrect: false }
+          ]},
+          { id: 47, question: "¿Cuál es el propósito esencial por el que se utiliza un módem en informática?", options: [
+            { text: "Detectar virus antes de que ingresen a la memoria RAM.", isCorrect: false },
+            { text: "Habilitar la transferencia de información entre computadoras remotas a través de medios físicos o inalámbricos.", isCorrect: true },
+            { text: "Imprimir documentos en red de manera inalámbrica.", isCorrect: false },
+            { text: "Bloquear puertos USB no autorizados.", isCorrect: false }
+          ]},
+          { id: 48, question: "En el mundo de las redes y la Internet, ¿qué es y para qué sirve una dirección IP?", options: [
+            { text: "Es un protocolo numérico que identifica de manera única a cada computadora o dispositivo conectado a la red.", isCorrect: true },
+            { text: "Es una señal analógica que permite conectar un ratón Bluetooth.", isCorrect: false },
+            { text: "Es el nombre de usuario de tu correo electrónico corporativo.", isCorrect: false },
+            { text: "Es una clave cifrada para abrir archivos comprimidos pesados.", isCorrect: false }
+          ]},
+          { id: 49, question: "¿Cómo se define conceptualmente a un 'Sitio Web' o sitio WWW?", options: [
+            { text: "Como un programa instalado localmente que no requiere conexión a Internet.", isCorrect: false },
+            { text: "Como un contenedor o agrupación lógica de múltiples páginas web relacionadas bajo un mismo dominio.", isCorrect: true },
+            { text: "Como un sistema exclusivo de intercambio de mensajes SMS.", isCorrect: false },
+            { text: "Como una carpeta comprimida descargada en la Papelera de reciclaje.", isCorrect: false }
+          ]},
+          { id: 50, question: "En una dirección de correo como 'juan.perez@empresa.com.mx', ¿qué función estructural tiene el símbolo '@' (arroba)?", options: [
+            { text: "Señalar que el correo contiene archivos adjuntos pesados.", isCorrect: false },
+            { text: "Indicar al sistema operativo que debe abrir un navegador web.", isCorrect: false },
+            { text: "Separar el nombre del usuario (juan.perez) del nombre de la organización o dominio (empresa.com.mx).", isCorrect: true },
+            { text: "Definir la contraseña secreta de la cuenta de usuario.", isCorrect: false }
+          ]},
+          { id: 51, question: "¿Qué medio de comunicación en la red se caracteriza por la transmisión instantánea de mensajes de texto en tiempo real?", options: [
+            { text: "El sistema de archivos en la nube (Google Drive, OneDrive).", isCorrect: false },
+            { text: "El servicio de Chat o mensajería instantánea.", isCorrect: true },
+            { text: "La página de historial del navegador.", isCorrect: false },
+            { text: "El protocolo de transferencia de archivos FTP.", isCorrect: false }
+          ]}
+        ];
+
+        // Nuevo componente separado para manejar el estado de carga y error de cada imagen individualmente
+        function OptionCard({ option, idx, isAnswered, selectedOptionIdx, onClick, currentQuestionId }) {
+            const [imgError, setImgError] = useState(false);
+
+            // Estilos basados en el estado y diseño tipo tarjeta (Card)
+            let cardStyle = "bg-white border-4 border-white hover:border-blue-300 shadow-md transform hover:-translate-y-1 hover:shadow-xl transition-all duration-300";
+            let textStyle = "text-slate-700";
+            
+            if (isAnswered) {
+              if (option.isCorrect) {
+                cardStyle = "bg-green-50 border-4 border-green-500 shadow-lg scale-[1.02]";
+                textStyle = "text-green-800";
+              } else if (idx === selectedOptionIdx && !option.isCorrect) {
+                cardStyle = "bg-red-50 border-4 border-red-500 shadow-lg scale-[1.02]";
+                textStyle = "text-red-800";
+              } else {
+                cardStyle = "bg-white border-4 border-white opacity-60 grayscale scale-100";
+              }
+            }
+
+            // Ruta local de la imagen (ej. images/q1_opt0.jpg)
+            const imgUrl = `images/q${currentQuestionId}_opt${idx}.webp`;
+
+            return (
+              <button
+                disabled={isAnswered}
+                onClick={onClick}
+                className={`w-full text-left p-3 rounded-3xl flex flex-col focus:outline-none ${cardStyle}`}
+              >
+                {/* Contenedor de la Imagen */}
+                <div className="relative w-full h-40 md:h-52 rounded-2xl overflow-hidden mb-4 bg-slate-200 shadow-inner flex items-center justify-center">
+                  
+                  {/* Imagen Local o Mensaje de Error */}
+                  {!imgError ? (
+                    <img 
+                      src={imgUrl} 
+                      alt={`Opción ${idx + 1}`} 
+                      onError={() => setImgError(true)}
+                      className="w-full h-full object-cover relative z-10" 
+                    />
+                  ) : (
+                    <div className="flex flex-col items-center justify-center text-slate-400 p-4 text-center bg-slate-100 w-full h-full">
+                      <svg className="w-10 h-10 mb-2 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                      <span className="text-xs font-mono">Falta imagen:<br/>{imgUrl}</span>
+                    </div>
+                  )}
+                  
+                  {/* Iconos de retroalimentación flotantes sobre la imagen */}
+                  {isAnswered && option.isCorrect && (
+                    <div className="absolute top-3 right-3 bg-green-500 text-white p-2 rounded-full shadow-lg z-30">
+                      <svg className="w-6 h-6 md:w-8 md:h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7"></path></svg>
+                    </div>
+                  )}
+                  {isAnswered && idx === selectedOptionIdx && !option.isCorrect && (
+                    <div className="absolute top-3 right-3 bg-red-500 text-white p-2 rounded-full shadow-lg z-30">
+                      <svg className="w-6 h-6 md:w-8 md:h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M6 18L18 6M6 6l12 12"></path></svg>
+                    </div>
+                  )}
+                </div>
+                
+                {/* Contenedor del Texto */}
+                <div className={`flex-grow flex items-center justify-center text-center font-bold text-sm md:text-base px-2 pb-2 ${textStyle}`}>
+                  {option.text}
+                </div>
+              </button>
+            );
+        }
+
+        function App() {
+          const [appState, setAppState] = useState('welcome'); // welcome, quiz, results
+          const [currentQuestionIdx, setCurrentQuestionIdx] = useState(0);
+          const [selectedOptionIdx, setSelectedOptionIdx] = useState(null);
+          const [isAnswered, setIsAnswered] = useState(false);
+          
+          // Stats
+          const [correctAnswers, setCorrectAnswers] = useState(0);
+          const [elapsedTime, setElapsedTime] = useState(0);
+          
+          // Timer effect
+          useEffect(() => {
+            let timer;
+            if (appState === 'quiz') {
+              timer = setInterval(() => {
+                setElapsedTime(prev => prev + 1);
+              }, 1000);
+            }
+            return () => clearInterval(timer);
+          }, [appState]);
+
+          const formatTime = (seconds) => {
+            const m = Math.floor(seconds / 60).toString().padStart(2, '0');
+            const s = (seconds % 60).toString().padStart(2, '0');
+            return `${m}:${s}`;
+          };
+
+          const startQuiz = () => {
+            setAppState('quiz');
+            setElapsedTime(0);
+            setCurrentQuestionIdx(0);
+            setCorrectAnswers(0);
+            setSelectedOptionIdx(null);
+            setIsAnswered(false);
+          };
+
+          const handleOptionClick = (index, isCorrect) => {
+            if (isAnswered) return; // Prevent multiple clicks
+
+            setSelectedOptionIdx(index);
+            setIsAnswered(true);
+
+            if (isCorrect) {
+              setCorrectAnswers(prev => prev + 1);
+            }
+          };
+
+          const nextQuestion = () => {
+            if (currentQuestionIdx < questions.length - 1) {
+              setCurrentQuestionIdx(prev => prev + 1);
+              setSelectedOptionIdx(null);
+              setIsAnswered(false);
+            } else {
+              setAppState('results');
+            }
+          };
+
+          const currentQuestion = questions[currentQuestionIdx];
+
+          return (
+            <div className="min-h-screen flex items-center justify-center p-4 font-sans text-slate-800">
+              
+              {/* PANTALLA DE BIENVENIDA */}
+              {appState === 'welcome' && (
+                <div className="bg-white max-w-2xl w-full p-8 rounded-2xl shadow-xl text-center space-y-6">
+                  <div className="mx-auto w-20 h-20 bg-blue-100 rounded-full flex items-center justify-center mb-4">
+                    <svg className="w-10 h-10 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"></path></svg>
+                  </div>
+                  <h1 className="text-3xl font-bold text-slate-800">Evaluación Interactiva</h1>
+                  <h2 className="text-xl text-slate-600 font-medium">Estándar EC0190: Manejo de aplicaciones e información en equipo de cómputo, nivel básico</h2>
+                  
+                  <div className="bg-amber-50 border border-amber-200 text-amber-800 p-4 rounded-lg my-6 flex items-start text-left">
+                    <svg className="w-6 h-6 mr-3 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    <div>
+                      <h3 className="font-bold">¡Atención!</h3>
+                      <p className="text-sm mt-1">El tiempo comenzará a correr en cuanto presiones el botón de inicio. Analiza bien cada pregunta y selecciona la opción correcta.</p>
+                    </div>
+                  </div>
+
+                  <button 
+                    onClick={startQuiz}
+                    className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 px-8 rounded-xl transition-colors shadow-md hover:shadow-lg text-lg"
+                  >
+                    Iniciar Evaluación
+                  </button>
+                </div>
+              )}
+
+              {/* PANTALLA DEL CUESTIONARIO */}
+              {appState === 'quiz' && (
+                <div className="bg-white max-w-4xl w-full rounded-2xl shadow-xl overflow-hidden flex flex-col">
+                  
+                  {/* Header (Progress & Timer) */}
+                  <div className="bg-slate-800 text-white p-4 flex justify-between items-center">
+                    <div className="font-semibold">
+                      Pregunta {currentQuestionIdx + 1} de {questions.length}
+                    </div>
+                    <div className="flex items-center space-x-2 font-mono font-bold text-lg bg-slate-700 py-1 px-3 rounded-lg">
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                      <span>{formatTime(elapsedTime)}</span>
+                    </div>
+                  </div>
+
+                  {/* Progress bar */}
+                  <div className="h-2 w-full bg-slate-200">
+                    <div 
+                      className="h-full bg-blue-500 transition-all duration-300"
+                      style={{ width: `${((currentQuestionIdx + 1) / questions.length) * 100}%` }}
+                    ></div>
+                  </div>
+
+                  {/* Question Area */}
+                  <div className="p-6 md:p-8 flex-grow bg-slate-50/50">
+                    <h2 className="text-xl md:text-3xl font-extrabold text-blue-950 text-center mb-8 leading-tight">
+                      {currentQuestion.question}
+                    </h2>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+                      {currentQuestion.options.map((option, idx) => (
+                        <OptionCard 
+                          key={`${currentQuestion.id}-${idx}`}
+                          option={option}
+                          idx={idx}
+                          isAnswered={isAnswered}
+                          selectedOptionIdx={selectedOptionIdx}
+                          onClick={() => handleOptionClick(idx, option.isCorrect)}
+                          currentQuestionId={currentQuestion.id}
+                        />
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Footer Action */}
+                  <div className="p-6 bg-slate-50 border-t border-slate-200 flex justify-end">
+                    <button
+                      onClick={nextQuestion}
+                      disabled={!isAnswered}
+                      className={`px-8 py-3 rounded-xl font-bold transition-all ${
+                        isAnswered 
+                          ? 'bg-blue-600 text-white hover:bg-blue-700 shadow-md' 
+                          : 'bg-slate-200 text-slate-400 cursor-not-allowed'
+                      }`}
+                    >
+                      {currentQuestionIdx === questions.length - 1 ? 'Ver Resultados' : 'Siguiente Pregunta'}
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {/* PANTALLA DE RESULTADOS */}
+              {appState === 'results' && (
+                <div className="bg-white max-w-xl w-full p-8 rounded-2xl shadow-xl text-center">
+                  <div className="mb-6">
+                    {correctAnswers >= Math.floor(questions.length * 0.7) ? (
+                      <div className="mx-auto w-24 h-24 bg-green-100 rounded-full flex items-center justify-center mb-4">
+                        <svg className="w-12 h-12 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                      </div>
+                    ) : (
+                      <div className="mx-auto w-24 h-24 bg-amber-100 rounded-full flex items-center justify-center mb-4">
+                        <svg className="w-12 h-12 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                      </div>
+                    )}
+                    
+                    <h2 className="text-3xl font-bold text-slate-800 mb-2">¡Evaluación Finalizada!</h2>
+                    <p className="text-slate-500">Aquí tienes el resumen de tu desempeño.</p>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4 mb-8">
+                    <div className="bg-slate-50 p-4 rounded-xl border border-slate-100">
+                      <p className="text-sm text-slate-500 font-semibold mb-1">Aciertos</p>
+                      <p className="text-3xl font-bold text-slate-800">
+                        <span className="text-green-600">{correctAnswers}</span> / {questions.length}
+                      </p>
+                    </div>
+                    
+                    <div className="bg-slate-50 p-4 rounded-xl border border-slate-100">
+                      <p className="text-sm text-slate-500 font-semibold mb-1">Errores</p>
+                      <p className="text-3xl font-bold text-slate-800">
+                        <span className="text-red-600">{questions.length - correctAnswers}</span>
+                      </p>
+                    </div>
+                    
+                    <div className="col-span-2 bg-blue-50 p-4 rounded-xl border border-blue-100 flex items-center justify-center">
+                       <svg className="w-6 h-6 text-blue-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                       <div>
+                          <p className="text-sm text-blue-600 font-semibold uppercase tracking-wider">Tiempo Total</p>
+                          <p className="text-2xl font-bold text-blue-900">{formatTime(elapsedTime)}</p>
+                       </div>
+                    </div>
+                  </div>
+
+                  <button 
+                    onClick={() => setAppState('welcome')}
+                    className="w-full bg-slate-800 hover:bg-slate-900 text-white font-bold py-4 px-8 rounded-xl transition-colors shadow-md text-lg"
+                  >
+                    Reintentar Cuestionario
+                  </button>
+                </div>
+              )}
+            </div>
+          );
+        }
+
+        // Renderizado de la aplicación en el div con id "root"
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>
